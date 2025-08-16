@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { signupUser } from "../../apiCalls/auth";
 
 const SignupPage = () => {
   const [user, setUser] = useState({
@@ -13,9 +14,19 @@ const SignupPage = () => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("form submitted", user);
+    try {
+      const response = await signupUser(user);
+      if (response.success) {
+        alert(response.message);
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
