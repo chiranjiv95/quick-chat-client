@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../apiCalls/auth";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [data, setData] = useState({
@@ -7,10 +9,24 @@ const LoginPage = () => {
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("data", data);
+    try {
+      const response = await loginUser(data);
+      if (response.success) {
+        localStorage.setItem("token", response.token);
+        toast.success(response.message);
+        navigate("/");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
+
   return (
     <div>
       <h2>Login</h2>
