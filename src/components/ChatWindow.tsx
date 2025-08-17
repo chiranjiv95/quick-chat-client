@@ -62,9 +62,14 @@ const ChatWindow = () => {
       {/* messages */}
       <div>
         {chatMessages.length > 0 &&
-          chatMessages.map((message) => (
-            <p key={message._id}>{message.text}</p>
-          ))}
+          chatMessages.map((message) => {
+            const you = message.sender === currentUser._id;
+            return (
+              <p key={message._id} className={you ? "text-right" : "text-left"}>
+                {message.text}
+              </p>
+            );
+          })}
       </div>
       {/* input */}
       <form onSubmit={handleMessageSend}>
