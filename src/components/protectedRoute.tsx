@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getLoggedInUser } from "../apiCalls/user";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 
 export const ProtectedRoute = ({ children }) => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const token = localStorage.getItem("token");
 
@@ -13,7 +15,7 @@ export const ProtectedRoute = ({ children }) => {
     try {
       const response = await getLoggedInUser();
       if (response.success) {
-        setUser(response.data);
+        dispatch(setUser(response.data));
       } else {
         toast.error("response.message");
         navigate("/login");
@@ -31,10 +33,5 @@ export const ProtectedRoute = ({ children }) => {
     }
   }, []);
 
-  return (
-    <>
-      <p>Hi {user?.firstname}!</p>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 };
