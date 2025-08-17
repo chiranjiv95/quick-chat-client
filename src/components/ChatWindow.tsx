@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { getChatMessages, sendMessage } from "../apiCalls/message";
+import moment from "moment";
 
 const ChatWindow = () => {
   const { selectedChat, user: currentUser } = useSelector(
@@ -52,6 +53,19 @@ const ChatWindow = () => {
     }
   }, [selectedChat]);
 
+  const formatTime = (timestamp) => {
+    const now = moment();
+    const diff = now.diff(moment(timestamp), "days");
+
+    if (diff < 1) {
+      return `Today ${moment(timestamp).format("hh:mm A")}`;
+    } else if (diff === 1) {
+      return `Yesterday ${moment(timestamp).format("hh:mm A")}`;
+    } else {
+      return moment(timestamp).format("MMM:DD, hh:mm A");
+    }
+  };
+
   return (
     <div>
       ChatWindow
@@ -65,9 +79,10 @@ const ChatWindow = () => {
           chatMessages.map((message) => {
             const you = message.sender === currentUser._id;
             return (
-              <p key={message._id} className={you ? "text-right" : "text-left"}>
-                {message.text}
-              </p>
+              <div className={you ? "text-right" : "text-left"}>
+                <p key={message._id}>{message.text}</p>
+                <p>{formatTime(message.createdAt)}</p>
+              </div>
             );
           })}
       </div>
