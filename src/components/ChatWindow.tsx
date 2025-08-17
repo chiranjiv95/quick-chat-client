@@ -72,7 +72,9 @@ const ChatWindow = () => {
   useEffect(() => {
     if (selectedChat?._id) {
       getAllMessages();
-      clearUnreadMessagesCount();
+      if (selectedChat?.lastMessage?.sender !== currentUser._id) {
+        clearUnreadMessagesCount();
+      }
     }
   }, [selectedChat]);
 
@@ -105,6 +107,7 @@ const ChatWindow = () => {
               <div className={you ? "text-right" : "text-left"}>
                 <p key={message._id}>{message.text}</p>
                 <p>{formatTime(message.createdAt)}</p>
+                {you && message.read && <p>✔✔</p>}
               </div>
             );
           })}

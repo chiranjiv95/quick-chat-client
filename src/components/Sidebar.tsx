@@ -78,6 +78,12 @@ const Sidebar = () => {
           const isSelected =
             selectedChat?._id && chat?._id && selectedChat._id === chat._id;
 
+          // ✅ Check unread count only if last message sender is not currentUser
+          const unreadMsgCount =
+            chat?.lastMessage?.sender !== currentUser?._id
+              ? chat?.unreadMessageCount
+              : 0;
+
           return (
             <div
               key={user._id}
@@ -96,7 +102,8 @@ const Sidebar = () => {
             >
               {user.firstname} {user.lastname}{" "}
               {!inChat && <span>Start Chat</span>}
-              <p>{chat?.lastMessage?.text || user.email}</p>
+              {/* show unread msg count */}
+              {unreadMsgCount > 0 && <span>{unreadMsgCount}</span>}
             </div>
           );
         })}
