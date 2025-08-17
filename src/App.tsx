@@ -3,10 +3,14 @@ import HomePage from "./pages/home";
 import SignupPage from "./pages/signup";
 import LoginPage from "./pages/login";
 import { ProtectedRoute } from "./components/protectedRoute";
+import { useSelector } from "react-redux";
 
 export default function App() {
+  const { loading = true } = useSelector((state) => state.loaderReducer);
+
   return (
     <div>
+      {loading && <div>Loading...</div>}
       <BrowserRouter>
         <Routes>
           <Route

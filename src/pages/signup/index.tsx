@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signupUser } from "../../apiCalls/auth";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { hideLoader, showloader } from "../../redux/loaderSlice";
 
 const SignupPage = () => {
   const [user, setUser] = useState({
@@ -11,6 +13,8 @@ const SignupPage = () => {
     password: "",
   });
 
+  const dispatch = useDispatch();
+
   const handleOnChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
@@ -19,6 +23,7 @@ const SignupPage = () => {
     e.preventDefault();
     console.log("form submitted", user);
     try {
+      dispatch(showloader());
       const response = await signupUser(user);
       if (response.success) {
         toast.success(response.message);
@@ -27,6 +32,8 @@ const SignupPage = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      dispatch(hideLoader());
     }
   };
 

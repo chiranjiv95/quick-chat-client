@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../apiCalls/auth";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { hideLoader, showloader } from "../../redux/loaderSlice";
 
 const LoginPage = () => {
   const [data, setData] = useState({
@@ -9,11 +11,13 @@ const LoginPage = () => {
     password: "",
   });
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      dispatch(showloader());
       const response = await loginUser(data);
       if (response.success) {
         localStorage.setItem("token", response.token);
@@ -24,6 +28,8 @@ const LoginPage = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      dispatch(hideLoader());
     }
   };
 
