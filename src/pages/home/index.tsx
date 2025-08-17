@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import Sidebar from "../../components/Sidebar";
 
 const HomePage = () => {
   const { user = {} } = useSelector((state) => state.userReducer);
@@ -31,6 +32,8 @@ const HomePage = () => {
       Home Page
       <h2>Hi, {getFullname()}!</h2>
       <p>{getInitials()}</p>
+      {/* sidebar */}
+      <Sidebar />
     </div>
   );
 };
