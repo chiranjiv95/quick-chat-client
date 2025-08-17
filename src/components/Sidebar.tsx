@@ -96,6 +96,7 @@ const Sidebar = () => {
             >
               {user.firstname} {user.lastname}{" "}
               {!inChat && <span>Start Chat</span>}
+              <p>{chat?.lastMessage?.text || user.email}</p>
             </div>
           );
         })}

@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { getChatMessages, sendMessage } from "../apiCalls/message";
+import {
+  clearUnreadMessages,
+  getChatMessages,
+  sendMessage,
+} from "../apiCalls/message";
 import moment from "moment";
 
 const ChatWindow = () => {
@@ -47,9 +51,28 @@ const ChatWindow = () => {
     }
   };
 
+  // clear unread messages
+  const clearUnreadMessagesCount = async () => {
+    console.log("selected chat clearUnreadMessagesCount", selectedChat?._id);
+    try {
+      const payload = {
+        chatId: selectedChat?._id,
+      };
+      const response = await clearUnreadMessages(payload);
+      if (response.success) {
+        console.log("clearUnreadMessagesCount response", response);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     if (selectedChat?._id) {
       getAllMessages();
+      clearUnreadMessagesCount();
     }
   }, [selectedChat]);
 

@@ -3,7 +3,7 @@ import Sidebar from "../../components/Sidebar";
 import ChatWindow from "../../components/ChatWindow";
 
 const HomePage = () => {
-  const { user = {} } = useSelector((state) => state.userReducer);
+  const { user = {}, selectedChat } = useSelector((state) => state.userReducer);
 
   const getFullname = () => {
     if (!user) return "";
@@ -35,7 +35,8 @@ const HomePage = () => {
       <p>{getInitials()}</p>
       <div className="flex gap-4">
         <Sidebar />
-        <ChatWindow />
+
+        {selectedChat && <ChatWindow />}
       </div>
     </div>
   );

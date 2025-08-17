@@ -19,3 +19,15 @@ export const getChatMessages = async (chatId) => {
     return error;
   }
 };
+
+export const clearUnreadMessages = async (data) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/chat/clear-unread-message",
+      data
+    );
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
