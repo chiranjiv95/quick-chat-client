@@ -1,11 +1,19 @@
 import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { getCurrentUserChats, startNewChat } from "../apiCalls/chat";
+import { hideLoader, showloader } from "../redux/loaderSlice";
+import { setChats } from "../redux/userSlice";
 
 const Sidebar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { users = [], chatList = [] } = useSelector(
-    (state) => state.userReducer
-  );
+  const {
+    user: currentUser = {},
+    users = [],
+    chatList = [],
+  } = useSelector((state) => state.userReducer);
+
+  const dispatch = useDispatch();
 
   console.log("search term", searchTerm);
 
@@ -16,6 +24,27 @@ const Sidebar = () => {
         user.lastname?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [users, searchTerm]);
+
+  // start a new chat
+  const createChat = async (userId) => {
+    const payload = {
+      members: [currentUser._id, userId],
+    };
+    try {
+      dispatch(showloader());
+      const response = await startNewChat(payload);
+      if (response.success) {
+        console.log("create chat response", response);
+        dispatch(setChats([...chatList, response.data]));
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      dispatch(hideLoader());
+    }
+  };
 
   return (
     <div>
@@ -41,7 +70,10 @@ const Sidebar = () => {
               key={user._id}
               style={{ fontWeight: inChat ? "bold" : "normal" }}
             >
-              {user.firstname} {user.lastname} {inChat && "(Chatting)"}
+              {user.firstname} {user.lastname}{" "}
+              {!inChat && (
+                <span onClick={() => createChat(user._id)}>Start Chat</span>
+              )}
             </div>
           );
         })}
