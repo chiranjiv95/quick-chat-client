@@ -39,7 +39,7 @@ const Sidebar = () => {
         dispatch(setChats([...chatList, response.data]));
 
         // set the newly created chat as selected
-        dispatch(setSelectedChat(response.data._id));
+        dispatch(setSelectedChat(response.data));
       } else {
         toast.error(response.message);
       }
@@ -65,23 +65,30 @@ const Sidebar = () => {
       <div>
         <h2>All Users</h2>
         {filteredUsers.map((user) => {
+          // check if user exists in chatList
           const inChat = chatList.some((chat) =>
-            chat.members.includes(user._id)
+            chat.members.some((member) => member._id === user._id)
           );
+
           // find the chat object if exists
-          const chat = chatList.find((chat) => chat.members.includes(user._id));
+          const chat = chatList.find((chat) =>
+            chat.members.some((member) => member._id === user._id)
+          );
+
+          const isSelected =
+            selectedChat?._id && chat?._id && selectedChat._id === chat._id;
+
           return (
             <div
               key={user._id}
               style={{
-                fontWeight: selectedChat === chat?._id ? "bold" : "normal",
-                backgroundColor:
-                  selectedChat === chat?._id ? "#e6f7ff" : "transparent",
+                fontWeight: isSelected ? "bold" : "normal",
+                backgroundColor: isSelected ? "#e6f7ff" : "transparent",
                 cursor: "pointer",
               }}
               onClick={() => {
                 if (chat) {
-                  dispatch(setSelectedChat(chat._id));
+                  dispatch(setSelectedChat(chat));
                 } else {
                   createChat(user._id);
                 }
