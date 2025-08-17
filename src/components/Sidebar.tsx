@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const Sidebar = () => {
@@ -7,9 +7,14 @@ const Sidebar = () => {
 
   console.log("search term", searchTerm);
 
-  const filteredUsers = [...users].filter((user) =>
-    user.firstname?.includes(searchTerm)
-  );
+  const filteredUsers = useMemo(() => {
+    return users.filter(
+      (user) =>
+        (user.firstname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.lastname?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        searchTerm
+    );
+  }, [users, searchTerm]);
 
   return (
     <div>
@@ -27,7 +32,9 @@ const Sidebar = () => {
         {filteredUsers.length > 0 &&
           filteredUsers?.map((user) => (
             <div key={user._id}>
-              <p>{user.firstname}</p>
+              <p>
+                {user.firstname} {user.lastname}
+              </p>
             </div>
           ))}
       </div>
