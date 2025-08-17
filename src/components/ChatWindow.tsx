@@ -1,11 +1,56 @@
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { getChatMessages, sendMessage } from "../apiCalls/message";
 
 const ChatWindow = () => {
-  const { selectedChat = {}, user: currentUser } = useSelector(
+  const { selectedChat, user: currentUser } = useSelector(
     (state) => state.userReducer
   );
+  const [message, setMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+
   const selectedUser =
     selectedChat?.members?.find((user) => user._id !== currentUser._id) || {};
+
+  const handleMessageSend = async (e) => {
+    e.preventDefault();
+    console.log("message", message);
+    const payload = {
+      chatId: selectedChat?._id,
+      sender: currentUser._id,
+      text: message,
+    };
+    try {
+      const response = await sendMessage(payload);
+      console.log("send message response", response);
+      if (response.success) {
+        setChatMessages([...chatMessages, response.data]);
+        setMessage("");
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // fetch chat messages
+  const getAllMessages = async () => {
+    try {
+      const response = await getChatMessages(selectedChat?._id);
+      console.log("get all messages response", response);
+      setChatMessages(response.data);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedChat?._id) {
+      getAllMessages();
+    }
+  }, [selectedChat]);
 
   return (
     <div>
@@ -14,6 +59,22 @@ const ChatWindow = () => {
         {selectedChat?._id}
         <p>{selectedUser.firstname}</p>
       </div>
+      {/* messages */}
+      <div>
+        {chatMessages.length > 0 &&
+          chatMessages.map((message) => (
+            <p key={message._id}>{message.text}</p>
+          ))}
+      </div>
+      {/* input */}
+      <form onSubmit={handleMessageSend}>
+        <input
+          placeholder="Enter something"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button>Send</button>
+      </form>
     </div>
   );
 };
