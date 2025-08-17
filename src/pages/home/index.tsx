@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import Sidebar from "../../components/Sidebar";
+import ChatWindow from "../../components/ChatWindow";
 
 const HomePage = () => {
   const { user = {} } = useSelector((state) => state.userReducer);
@@ -32,8 +33,10 @@ const HomePage = () => {
       Home Page
       <h2>Hi, {getFullname()}!</h2>
       <p>{getInitials()}</p>
-      {/* sidebar */}
-      <Sidebar />
+      <div className="flex gap-4">
+        <Sidebar />
+        <ChatWindow />
+      </div>
     </div>
   );
 };

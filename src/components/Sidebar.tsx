@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { getCurrentUserChats, startNewChat } from "../apiCalls/chat";
+import { startNewChat } from "../apiCalls/chat";
 import { hideLoader, showloader } from "../redux/loaderSlice";
-import { setChats } from "../redux/userSlice";
+import { setChats, setSelectedChat } from "../redux/userSlice";
 
 const Sidebar = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,6 +11,7 @@ const Sidebar = () => {
     user: currentUser = {},
     users = [],
     chatList = [],
+    selectedChat,
   } = useSelector((state) => state.userReducer);
 
   const dispatch = useDispatch();
@@ -36,6 +37,9 @@ const Sidebar = () => {
       if (response.success) {
         console.log("create chat response", response);
         dispatch(setChats([...chatList, response.data]));
+
+        // set the newly created chat as selected
+        dispatch(setSelectedChat(response.data._id));
       } else {
         toast.error(response.message);
       }
@@ -64,16 +68,27 @@ const Sidebar = () => {
           const inChat = chatList.some((chat) =>
             chat.members.includes(user._id)
           );
-
+          // find the chat object if exists
+          const chat = chatList.find((chat) => chat.members.includes(user._id));
           return (
             <div
               key={user._id}
-              style={{ fontWeight: inChat ? "bold" : "normal" }}
+              style={{
+                fontWeight: selectedChat === chat?._id ? "bold" : "normal",
+                backgroundColor:
+                  selectedChat === chat?._id ? "#e6f7ff" : "transparent",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                if (chat) {
+                  dispatch(setSelectedChat(chat._id));
+                } else {
+                  createChat(user._id);
+                }
+              }}
             >
               {user.firstname} {user.lastname}{" "}
-              {!inChat && (
-                <span onClick={() => createChat(user._id)}>Start Chat</span>
-              )}
+              {!inChat && <span>Start Chat</span>}
             </div>
           );
         })}
