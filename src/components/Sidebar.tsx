@@ -3,16 +3,17 @@ import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { users = [] } = useSelector((state) => state.userReducer);
+  const { users = [], chatList = [] } = useSelector(
+    (state) => state.userReducer
+  );
 
   console.log("search term", searchTerm);
 
   const filteredUsers = useMemo(() => {
     return users.filter(
       (user) =>
-        (user.firstname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.lastname?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        searchTerm
+        user.firstname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.lastname?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [users, searchTerm]);
 
@@ -29,14 +30,21 @@ const Sidebar = () => {
 
       {/* Chat List */}
       <div>
-        {filteredUsers.length > 0 &&
-          filteredUsers?.map((user) => (
-            <div key={user._id}>
-              <p>
-                {user.firstname} {user.lastname}
-              </p>
+        <h2>All Users</h2>
+        {filteredUsers.map((user) => {
+          const inChat = chatList.some((chat) =>
+            chat.members.includes(user._id)
+          );
+
+          return (
+            <div
+              key={user._id}
+              style={{ fontWeight: inChat ? "bold" : "normal" }}
+            >
+              {user.firstname} {user.lastname} {inChat && "(Chatting)"}
             </div>
-          ))}
+          );
+        })}
       </div>
     </div>
   );

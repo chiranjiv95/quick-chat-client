@@ -3,7 +3,8 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getAllUsers, getLoggedInUser } from "../apiCalls/user";
 import { useDispatch } from "react-redux";
-import { setUser, setUsers } from "../redux/userSlice";
+import { setChats, setUser, setUsers } from "../redux/userSlice";
+import { getCurrentUserChats } from "../apiCalls/chat";
 
 export const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -40,10 +41,24 @@ export const ProtectedRoute = ({ children }) => {
     }
   };
 
+  const fetchAllChats = async () => {
+    try {
+      const response = await getCurrentUserChats();
+      if (response.success) {
+        dispatch(setChats(response.data));
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     if (token) {
       fetchLoggedInUser();
       fetchAllUsers();
+      fetchAllChats();
     } else {
       navigate("/login");
     }
